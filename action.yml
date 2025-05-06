@@ -15,18 +15,17 @@ inputs:
   github_token:
     description: GitHub token for API access
     required: true
-    default: ${{ github.token }}
+  owner:
+    description: The owner of the repository
+    required: true
+  repo:
+    description: The name of the repository
+    required: true
 
 outputs:
-  pull_request_number:
-    description: The number of the pull request associated with the commit
-  pull_request_title:
-    description: The title of the pull request
-  pull_request_url:
-    description: The URL of the pull request
-  pull_request_labels:
-    description: JSON array of labels on the pull request
+  pull_requests:
+    description: JSON array of pull requests associated with the commit
 
 runs:
-  using: node20
+  using: node22
   main: dist/index.js
