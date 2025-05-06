@@ -1,23 +1,31 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: PR Info from Commit
+description:
+  Retrieves Pull Request information associated with a commit SHA from a Push
+  Event
+author: Dennis Cual
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: heart
-  color: red
+  icon: git-pull-request
+  color: blue
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
+  commit_sha:
+    description: The commit SHA from the push event
     required: true
-    default: '1000'
+  github_token:
+    description: GitHub token for API access
+    required: true
+    default: ${{ github.token }}
 
-# Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
+  pull_request_number:
+    description: The number of the pull request associated with the commit
+  pull_request_title:
+    description: The title of the pull request
+  pull_request_url:
+    description: The URL of the pull request
+  pull_request_labels:
+    description: JSON array of labels on the pull request
 
 runs:
   using: node20
