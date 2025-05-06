@@ -1,17 +1,17 @@
 {
-  "name": "javascript-action",
-  "description": "GitHub Actions JavaScript Template",
-  "version": "0.0.0",
-  "author": "",
+  "name": "pull-request-info",
+  "description": "Get Pull Request information in Github Action",
+  "version": "1.1.0",
+  "author": "denniscual",
   "type": "module",
   "private": true,
-  "homepage": "https://github.com/actions/javascript-action#readme",
+  "homepage": "https://github.com/denniscual/pull-request-info",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/denniscual/pull-request-info.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
+    "url": "https://github.com/denniscual/pull-request-info/issues"
   },
   "keywords": [
     "actions"
