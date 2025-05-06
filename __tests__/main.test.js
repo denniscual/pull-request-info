@@ -82,7 +82,11 @@ describe('main.js', () => {
 
     await run()
 
-    expect(core.setFailed).toHaveBeenCalledWith(errorMessage)
+    // If there is an error occurring in the action, we inspect the action to set output to empty array instead of failing the workflow run.
+    expect(core.setOutput).toHaveBeenCalledWith(
+      'pull_requests',
+      JSON.stringify([])
+    )
   })
 
   it('handles empty pull request list', async () => {
