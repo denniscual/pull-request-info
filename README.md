@@ -4,21 +4,6 @@ A GitHub Action that retrieves pull request information associated with a
 specific commit. This action makes it easy to find all pull requests related to
 a commit in your workflows.
 
-## Inputs
-
-| Input          | Description                                            | Required |
-| -------------- | ------------------------------------------------------ | -------- |
-| `commit_sha`   | The SHA of the commit to find associated pull requests | Yes      |
-| `github_token` | GitHub token for API authentication                    | Yes      |
-| `owner`        | The owner of the repository                            | Yes      |
-| `repo`         | The name of the repository                             | Yes      |
-
-## Outputs
-
-| Output          | Description                                                                                    |
-| --------------- | ---------------------------------------------------------------------------------------------- |
-| `pull_requests` | JSON array containing information about all pull requests associated with the specified commit |
-
 ## Usage
 
 ```yaml
@@ -40,7 +25,22 @@ steps:
       echo "Pull Requests: ${{ steps.pr-info.outputs.pull_requests }}"
 ```
 
-## Example Output
+### Inputs
+
+| Input          | Description                                            | Required |
+| -------------- | ------------------------------------------------------ | -------- |
+| `commit_sha`   | The SHA of the commit to find associated pull requests | Yes      |
+| `github_token` | GitHub token for API authentication                    | Yes      |
+| `owner`        | The owner of the repository                            | Yes      |
+| `repo`         | The name of the repository                             | Yes      |
+
+### Outputs
+
+| Output          | Description                                                                                    |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| `pull_requests` | JSON array containing information about all pull requests associated with the specified commit |
+
+### Example Output
 
 The `pull_requests` output contains a JSON array with details about each related
 pull request:
