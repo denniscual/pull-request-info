@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import { wait } from './wait.js'
+import { Octokit } from '@octokit/core'
 
 /**
  * The main function for the action.
@@ -8,20 +8,47 @@ import { wait } from './wait.js'
  */
 export async function run() {
   try {
-    const ms = core.getInput('milliseconds')
+    const commitSha = core.getInput('commit_sha')
+    const githubToken = core.getInput('github_token')
+    const owner = core.getInput('owner')
+    const repo = core.getInput('repo')
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    core.debug(`Commit SHA: ${commitSha}`)
+    core.debug(`Owner: ${owner}`)
+    core.debug(`Repo: ${repo}`)
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    // Initialize Octokit client with the provided token
+    const octokit = new Octokit({
+      auth: githubToken
+    })
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    // Make request to get pull requests associated with the commit
+    core.debug(`Fetching pull requests for commit ${commitSha}...`)
+    const response = await octokit.request(
+      'GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls',
+      {
+        owner,
+        repo,
+        commit_sha: commitSha,
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
+      }
+    )
+
+    core.debug(
+      `Found ${response.data.length} pull requests associated with the commit`
+    )
+
+    // Set the output as specified in action.yml
+    core.setOutput('pull_requests', JSON.stringify(response.data))
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.error(error)
+    }
+
+    // Avoid failing the workflow run if there is an error occurring in the action. Instead, set output to empty array
+    core.setOutput('pull_requests', JSON.stringify([]))
   }
 }
