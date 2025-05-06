@@ -110,3 +110,7 @@ __tests__/runner/*
 
 # Yarn v1
 yarn.lock
+
+# Environment variables files
+.env.example
+.env.local
