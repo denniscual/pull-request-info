@@ -100,17 +100,3 @@ __tests__/runner/*
 # IDE files
 .idea
 *.code-workspace
-
-# yarn v2+
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-
-# Yarn v1
-yarn.lock
-
-# Environment variables files
-.env.example
-.env.local
