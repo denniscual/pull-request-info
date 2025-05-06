@@ -28428,11 +28428,6 @@ class Octokit {
   auth;
 }
 
-/**
- * The main function for the action.
- *
- * @returns {Promise<void>} Resolves when the action is complete.
- */
 async function run() {
   try {
     const commitSha = coreExports.getInput('commit_sha');
@@ -28444,7 +28439,6 @@ async function run() {
     coreExports.debug(`Owner: ${owner}`);
     coreExports.debug(`Repo: ${repo}`);
 
-    // Initialize Octokit client with the provided token
     const octokit = new Octokit({
       auth: githubToken
     });
@@ -28485,10 +28479,8 @@ async function run() {
       }))
     }));
 
-    // Set the output as specified in action.yml
     coreExports.setOutput('pull_requests', JSON.stringify(transformedPullRequests));
   } catch (error) {
-    // Fail the workflow run if an error occurs
     if (error instanceof Error) {
       coreExports.error(error);
     }
