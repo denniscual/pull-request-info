@@ -57,8 +57,11 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 1000
+          commit_sha: 1f98673e57a4f3785ac7121af641e96357dd183d
+          owner: denniscual
+          repo: test-github-action
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: echo "${{ steps.test-action.outputs.pull_requests }}"
