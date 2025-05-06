@@ -44,6 +44,11 @@ export async function run() {
     core.setOutput('pull_requests', JSON.stringify(response.data))
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.error(error)
+    }
+
+    // Avoid failing the workflow run if there is an error occurring in the action. Instead, set output to empty array
+    core.setOutput('pull_requests', JSON.stringify([]))
   }
 }
