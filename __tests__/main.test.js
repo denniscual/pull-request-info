@@ -7,11 +7,16 @@
  */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
-import { wait } from '../__fixtures__/wait.js'
+
+// Create mock for Octokit
+const mockRequest = jest.fn()
+const Octokit = jest.fn().mockImplementation(() => ({
+  request: mockRequest
+}))
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait.js', () => ({ wait }))
+jest.unstable_mockModule('@octokit/core', () => ({ Octokit }))
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
@@ -19,44 +24,75 @@ const { run } = await import('../src/main.js')
 
 describe('main.js', () => {
   beforeEach(() => {
-    // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation(() => '500')
+    // Reset all mocks
+    jest.clearAllMocks()
 
-    // Mock the wait function so that it does not actually wait.
-    wait.mockImplementation(() => Promise.resolve('done!'))
+    // Set up default mock inputs
+    core.getInput.mockImplementation((name) => {
+      if (name === 'commit_sha') return 'test-commit-sha'
+      if (name === 'github_token') return 'test-token'
+      if (name === 'owner') return 'testOwner'
+      if (name === 'repo') return 'testRepo'
+      return ''
+    })
+
+    // Set up default mock response
+    mockRequest.mockResolvedValue({
+      data: [
+        { id: 1, title: 'Test PR 1' },
+        { id: 2, title: 'Test PR 2' }
+      ]
+    })
   })
 
-  afterEach(() => {
-    jest.resetAllMocks()
-  })
-
-  it('Sets the time output', async () => {
+  it('makes the correct API request', async () => {
     await run()
 
-    // Verify the time output was set.
-    expect(core.setOutput).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      // Simple regex to match a time string in the format HH:MM:SS.
-      expect.stringMatching(/^\d{2}:\d{2}:\d{2}/)
+    expect(mockRequest).toHaveBeenCalledWith(
+      'GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls',
+      {
+        owner: 'testOwner',
+        repo: 'testRepo',
+        commit_sha: 'test-commit-sha',
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
+      }
     )
   })
 
-  it('Sets a failed status', async () => {
-    // Clear the getInput mock and return an invalid value.
-    core.getInput.mockClear().mockReturnValueOnce('this is not a number')
-
-    // Clear the wait mock and return a rejected promise.
-    wait
-      .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
+  it('sets the output with the pull request data', async () => {
+    const mockPRs = [
+      { id: 1, title: 'Test PR 1' },
+      { id: 2, title: 'Test PR 2' }
+    ]
+    mockRequest.mockResolvedValue({ data: mockPRs })
 
     await run()
 
-    // Verify that the action was marked as failed.
-    expect(core.setFailed).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds is not a number'
+    expect(core.setOutput).toHaveBeenCalledWith(
+      'pull_requests',
+      JSON.stringify(mockPRs)
     )
+  })
+
+  it('handles API errors correctly', async () => {
+    const errorMessage = 'API request failed'
+    mockRequest.mockRejectedValue(new Error(errorMessage))
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(errorMessage)
+  })
+
+  it('handles empty pull request list', async () => {
+    mockRequest.mockResolvedValue({ data: [] })
+
+    await run()
+
+    expect(core.debug).toHaveBeenCalledWith(
+      'Found 0 pull requests associated with the commit'
+    )
+    expect(core.setOutput).toHaveBeenCalledWith('pull_requests', '[]')
   })
 })
