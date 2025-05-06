@@ -114,3 +114,6 @@ yarn.lock
 # Environment variables files
 .env.example
 .env.local
+
+# distribution output directory
+dist
