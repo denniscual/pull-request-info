@@ -22,6 +22,53 @@ jest.unstable_mockModule('@octokit/core', () => ({ Octokit }))
 // mocks are used in place of any actual dependencies.
 const { run } = await import('../src/main.js')
 
+const mockPrs = [
+  {
+    number: 1,
+    title: 'Test PR 1',
+    url: 'https://github.com/testOwner/testRepo/pull/1',
+    created_at: '2023-01-01T00:00:00Z',
+    updated_at: '2023-01-02T00:00:00Z',
+    merged_at: '2023-01-03T00:00:00Z',
+    user: {
+      login: 'testUser1',
+      url: 'https://github.com/testUser1'
+    },
+    labels: [
+      {
+        id: 101,
+        name: 'bug',
+        description: 'Bug fix'
+      }
+    ],
+    comments_url:
+      'https://api.github.com/repos/testOwner/testRepo/issues/1/comments',
+    state: 'open'
+  },
+  {
+    number: 2,
+    title: 'Test PR 2',
+    url: 'https://github.com/testOwner/testRepo/pull/2',
+    created_at: '2023-01-04T00:00:00Z',
+    updated_at: '2023-01-05T00:00:00Z',
+    merged_at: null,
+    user: {
+      login: 'testUser2',
+      url: 'https://github.com/testUser2'
+    },
+    labels: [
+      {
+        id: 102,
+        name: 'enhancement',
+        description: 'New feature'
+      }
+    ],
+    comments_url:
+      'https://api.github.com/repos/testOwner/testRepo/issues/1/comments',
+    state: 'open'
+  }
+]
+
 describe('main.js', () => {
   beforeEach(() => {
     // Reset all mocks
@@ -38,10 +85,7 @@ describe('main.js', () => {
 
     // Set up default mock response
     mockRequest.mockResolvedValue({
-      data: [
-        { id: 1, title: 'Test PR 1' },
-        { id: 2, title: 'Test PR 2' }
-      ]
+      data: mockPrs
     })
   })
 
@@ -62,17 +106,29 @@ describe('main.js', () => {
   })
 
   it('sets the output with the pull request data', async () => {
-    const mockPRs = [
-      { id: 1, title: 'Test PR 1' },
-      { id: 2, title: 'Test PR 2' }
-    ]
-    mockRequest.mockResolvedValue({ data: mockPRs })
-
     await run()
 
     expect(core.setOutput).toHaveBeenCalledWith(
       'pull_requests',
-      JSON.stringify(mockPRs)
+      JSON.stringify(
+        mockPrs.map((pr) => ({
+          number: pr.number,
+          title: pr.title,
+          url: pr.html_url,
+          created_at: pr.created_at,
+          updated_at: pr.updated_at,
+          merged_at: pr.merged_at,
+          user: {
+            login: pr.user.login,
+            url: pr.user.html_url
+          },
+          labels: pr.labels.map((label) => ({
+            id: label.id,
+            name: label.name,
+            description: label.description
+          }))
+        }))
+      )
     )
   })
 
@@ -87,16 +143,5 @@ describe('main.js', () => {
       'pull_requests',
       JSON.stringify([])
     )
-  })
-
-  it('handles empty pull request list', async () => {
-    mockRequest.mockResolvedValue({ data: [] })
-
-    await run()
-
-    expect(core.debug).toHaveBeenCalledWith(
-      'Found 0 pull requests associated with the commit'
-    )
-    expect(core.setOutput).toHaveBeenCalledWith('pull_requests', '[]')
   })
 })

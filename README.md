@@ -1,17 +1,8 @@
 # Pull Request Info GitHub Action
 
-[![GitHub Super-Linter](https://github.com/actions/javascript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/javascript-action/actions/workflows/ci.yml/badge.svg)
-
 A GitHub Action that retrieves pull request information associated with a
 specific commit. This action makes it easy to find all pull requests related to
 a commit in your workflows.
-
-## Features
-
-- Finds all pull requests that include a specific commit
-- Returns detailed pull request information in a structured JSON format
-- Gracefully handles errors without failing the workflow
 
 ## Inputs
 
@@ -37,7 +28,7 @@ steps:
 
   - name: Get Pull Request Info
     id: pr-info
-    uses: denniscual/pull-request-info@v1
+    uses: denniscual/pull-request-info@v1.0.0
     with:
       commit_sha: ${{ github.sha }}
       github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -57,17 +48,42 @@ pull request:
 ```json
 [
   {
-    "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
-    "id": 1347,
-    "number": 1347,
-    "state": "open",
-    "title": "Feature: Add new functionality",
+    "number": 1,
+    "title": "Test PR 1",
+    "url": "https://github.com/testOwner/testRepo/pull/1",
+    "created_at": "2023-01-01T00:00:00Z",
+    "updated_at": "2023-01-02T00:00:00Z",
+    "merged_at": "2023-01-03T00:00:00Z",
     "user": {
-      "login": "octocat",
-      "id": 1
+      "login": "testUser1",
+      "url": "https://github.com/testUser1"
     },
-    "created_at": "2011-01-26T19:01:12Z",
-    "updated_at": "2011-01-26T19:01:12Z"
+    "labels": [
+      {
+        "id": 101,
+        "name": "bug",
+        "description": "Bug fix"
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "title": "Test PR 2",
+    "url": "https://github.com/testOwner/testRepo/pull/2",
+    "created_at": "2023-01-04T00:00:00Z",
+    "updated_at": "2023-01-05T00:00:00Z",
+    "merged_at": null,
+    "user": {
+      "login": "testUser2",
+      "url": "https://github.com/testUser2"
+    },
+    "labels": [
+      {
+        "id": 102,
+        "name": "enhancement",
+        "description": "New feature"
+      }
+    ]
   }
 ]
 ```

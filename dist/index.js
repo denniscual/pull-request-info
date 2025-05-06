@@ -28467,8 +28467,26 @@ async function run() {
       `Found ${response.data.length} pull requests associated with the commit`
     );
 
+    const transformedPullRequests = response.data.map((pr) => ({
+      number: pr.number,
+      title: pr.title,
+      url: pr.html_url,
+      created_at: pr.created_at,
+      updated_at: pr.updated_at,
+      merged_at: pr.merged_at,
+      user: {
+        login: pr.user.login,
+        url: pr.user.html_url
+      },
+      labels: pr.labels.map((label) => ({
+        id: label.id,
+        name: label.name,
+        description: label.description
+      }))
+    }));
+
     // Set the output as specified in action.yml
-    coreExports.setOutput('pull_requests', JSON.stringify(response.data));
+    coreExports.setOutput('pull_requests', JSON.stringify(transformedPullRequests));
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) {
