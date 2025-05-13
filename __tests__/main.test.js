@@ -144,4 +144,48 @@ describe('main.js', () => {
       JSON.stringify([])
     )
   })
+
+  it('filters pull requests by label when label input is provided', async () => {
+    // Override the getInput mock to return a label
+    core.getInput.mockImplementation((name) => {
+      if (name === 'commit_sha') return 'test-commit-sha'
+      if (name === 'github_token') return 'test-token'
+      if (name === 'owner') return 'testOwner'
+      if (name === 'repo') return 'testRepo'
+      if (name === 'label') return 'bug'
+      return ''
+    })
+
+    await run()
+
+    // Only PR with 'bug' label should be included in the output
+    const expectedOutput = mockPrs
+      .filter((pr) => pr.labels.some((label) => label.name === 'bug'))
+      .map((pr) => ({
+        number: pr.number,
+        title: pr.title,
+        url: pr.html_url,
+        created_at: pr.created_at,
+        updated_at: pr.updated_at,
+        merged_at: pr.merged_at,
+        user: {
+          login: pr.user.login,
+          url: pr.user.html_url
+        },
+        labels: pr.labels.map((label) => ({
+          id: label.id,
+          name: label.name,
+          description: label.description
+        }))
+      }))
+
+    expect(core.setOutput).toHaveBeenCalledWith(
+      'pull_requests',
+      JSON.stringify(expectedOutput)
+    )
+
+    // Verify we're only getting PRs with the bug label
+    expect(JSON.parse(core.setOutput.mock.calls[0][1]).length).toBe(1)
+    expect(JSON.parse(core.setOutput.mock.calls[0][1])[0].number).toBe(1)
+  })
 })
