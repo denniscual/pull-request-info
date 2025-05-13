@@ -130,6 +130,9 @@ describe('main.js', () => {
         }))
       )
     )
+
+    // Verify that the size output is set correctly
+    expect(core.setOutput).toHaveBeenCalledWith('size', 2)
   })
 
   it('handles API errors correctly', async () => {
@@ -143,6 +146,9 @@ describe('main.js', () => {
       'pull_requests',
       JSON.stringify([])
     )
+
+    // Verify that the size output is set to 0 on error
+    expect(core.setOutput).toHaveBeenCalledWith('size', 0)
   })
 
   it('filters pull requests by label when label input is provided', async () => {
@@ -187,5 +193,8 @@ describe('main.js', () => {
     // Verify we're only getting PRs with the bug label
     expect(JSON.parse(core.setOutput.mock.calls[0][1]).length).toBe(1)
     expect(JSON.parse(core.setOutput.mock.calls[0][1])[0].number).toBe(1)
+
+    // Verify that the size output is set correctly for filtered results
+    expect(core.setOutput).toHaveBeenCalledWith('size', 1)
   })
 })
