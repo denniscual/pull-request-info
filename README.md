@@ -25,6 +25,7 @@ steps:
   - name: Use Pull Request Info
     run: |
       echo "Pull Requests: ${{ steps.pr-info.outputs.pull_requests }}"
+      echo "Number of PRs: ${{ steps.pr-info.outputs.size }}"
 ```
 
 ### Inputs
@@ -42,6 +43,7 @@ steps:
 | Output          | Description                                                                                    |
 | --------------- | ---------------------------------------------------------------------------------------------- |
 | `pull_requests` | JSON array containing information about all pull requests associated with the specified commit |
+| `size`          | The number of pull requests associated with the specified commit                               |
 
 ### Example Output
 
