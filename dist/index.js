@@ -28493,6 +28493,7 @@ async function run() {
     }));
 
     coreExports.setOutput('pull_requests', JSON.stringify(transformedPullRequests));
+    coreExports.setOutput('size', transformedPullRequests.length);
   } catch (error) {
     if (error instanceof Error) {
       coreExports.error(error);
@@ -28500,6 +28501,7 @@ async function run() {
 
     // Avoid failing the workflow run if there is an error occurring in the action. Instead, set output to empty array
     coreExports.setOutput('pull_requests', JSON.stringify([]));
+    coreExports.setOutput('size', 0);
   }
 }
 

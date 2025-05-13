@@ -29,6 +29,8 @@ inputs:
 outputs:
   pull_requests:
     description: JSON array of pull requests associated with the commit
+  size:
+    description: The number of pull requests associated with the commit
 
 runs:
   using: node20

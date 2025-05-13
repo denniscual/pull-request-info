@@ -66,6 +66,7 @@ export async function run() {
     }))
 
     core.setOutput('pull_requests', JSON.stringify(transformedPullRequests))
+    core.setOutput('size', transformedPullRequests.length)
   } catch (error) {
     if (error instanceof Error) {
       core.error(error)
@@ -73,5 +74,6 @@ export async function run() {
 
     // Avoid failing the workflow run if there is an error occurring in the action. Instead, set output to empty array
     core.setOutput('pull_requests', JSON.stringify([]))
+    core.setOutput('size', 0)
   }
 }
