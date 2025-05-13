@@ -1,7 +1,7 @@
 {
   "name": "pull-request-info",
   "description": "Get Pull Request information in Github Action",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "denniscual",
   "type": "module",
   "private": true,
