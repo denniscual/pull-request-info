@@ -28434,10 +28434,12 @@ async function run() {
     const githubToken = coreExports.getInput('github_token');
     const owner = coreExports.getInput('owner');
     const repo = coreExports.getInput('repo');
+    const label = coreExports.getInput('label');
 
     coreExports.debug(`Commit SHA: ${commitSha}`);
     coreExports.debug(`Owner: ${owner}`);
     coreExports.debug(`Repo: ${repo}`);
+    coreExports.debug(`Label: ${label}`);
 
     const octokit = new Octokit({
       auth: githubToken
@@ -28457,11 +28459,22 @@ async function run() {
       }
     );
 
+    let pullRequests = response.data;
+
+    if (label) {
+      pullRequests = pullRequests.filter((pr) => {
+        if (pr.labels.length === 0) {
+          return false
+        }
+        return Boolean(pr.labels.find((prLabel) => prLabel.name === label))
+      });
+    }
+
     coreExports.debug(
-      `Found ${response.data.length} pull requests associated with the commit`
+      `Found ${pullRequests.length} pull requests associated with the commit`
     );
 
-    const transformedPullRequests = response.data.map((pr) => ({
+    const transformedPullRequests = pullRequests.map((pr) => ({
       number: pr.number,
       title: pr.title,
       url: pr.html_url,

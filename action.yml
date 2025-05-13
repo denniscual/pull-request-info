@@ -21,6 +21,10 @@ inputs:
   repo:
     description: The name of the repository
     required: true
+  label:
+    description: The label to filter pull requests by
+    required: false
+    default: ''
 
 outputs:
   pull_requests:

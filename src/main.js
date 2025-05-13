@@ -7,10 +7,12 @@ export async function run() {
     const githubToken = core.getInput('github_token')
     const owner = core.getInput('owner')
     const repo = core.getInput('repo')
+    const label = core.getInput('label')
 
     core.debug(`Commit SHA: ${commitSha}`)
     core.debug(`Owner: ${owner}`)
     core.debug(`Repo: ${repo}`)
+    core.debug(`Label: ${label}`)
 
     const octokit = new Octokit({
       auth: githubToken
@@ -30,11 +32,22 @@ export async function run() {
       }
     )
 
+    let pullRequests = response.data
+
+    if (label) {
+      pullRequests = pullRequests.filter((pr) => {
+        if (pr.labels.length === 0) {
+          return false
+        }
+        return Boolean(pr.labels.find((prLabel) => prLabel.name === label))
+      })
+    }
+
     core.debug(
-      `Found ${response.data.length} pull requests associated with the commit`
+      `Found ${pullRequests.length} pull requests associated with the commit`
     )
 
-    const transformedPullRequests = response.data.map((pr) => ({
+    const transformedPullRequests = pullRequests.map((pr) => ({
       number: pr.number,
       title: pr.title,
       url: pr.html_url,

@@ -19,6 +19,8 @@ steps:
       github_token: ${{ secrets.GITHUB_TOKEN }}
       owner: ${{ github.repository_owner }}
       repo: ${{ github.event.repository.name }}
+      # Optional: Filter PRs by label
+      # label: 'bug'
 
   - name: Use Pull Request Info
     run: |
@@ -27,12 +29,13 @@ steps:
 
 ### Inputs
 
-| Input          | Description                                            | Required |
-| -------------- | ------------------------------------------------------ | -------- |
-| `commit_sha`   | The SHA of the commit to find associated pull requests | Yes      |
-| `github_token` | GitHub token for API authentication                    | Yes      |
-| `owner`        | The owner of the repository                            | Yes      |
-| `repo`         | The name of the repository                             | Yes      |
+| Input          | Description                                            | Required | Default |
+| -------------- | ------------------------------------------------------ | -------- | ------- |
+| `commit_sha`   | The SHA of the commit to find associated pull requests | Yes      | N/A     |
+| `github_token` | GitHub token for API authentication                    | Yes      | N/A     |
+| `owner`        | The owner of the repository                            | Yes      | N/A     |
+| `repo`         | The name of the repository                             | Yes      | N/A     |
+| `label`        | Filter pull requests by label name                     | No       | `''`    |
 
 ### Outputs
 
